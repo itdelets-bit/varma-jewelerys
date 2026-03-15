@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Varma Jewelerys</title>
+<link rel="stylesheet" href="style.css?v=20260315t">
+</head>
+
+<body>
+
+<div id="authPage" class="auth-page">
+<div class="auth-card">
+<div class="auth-top">
+<div class="brand-block">
+<img src="logo.svg" alt="Varma Jewellers logo" class="brand-logo">
+<div>
+<h1>Varma Jewellers</h1>
+<p>Manufacturer's wholeseller's of gold &amp; Silver ornaments</p>
+</div>
+</div>
+</div>
+<div class="auth-body">
+<div class="auth-illustration">
+<img src="Untitled.png" alt="Welcome Ganesha">
+<h2>Login</h2>
+</div>
+<div class="auth-form">
+<div id="loginPanel" class="auth-panel">
+<label for="loginUser">User</label>
+<input id="loginUser" type="text" autocomplete="username">
+<label for="loginPass">Password</label>
+<input id="loginPass" type="password" autocomplete="current-password">
+<button type="button" class="auth-submit" onclick="loginUser()">Login</button>
+</div>
+
+<p id="authMessage" class="auth-message"></p>
+</div>
+</div>
+<div class="auth-bottom"></div>
+</div>
+</div>
+
+<div id="appShell" style="display:none;">
+<header class="topbar">
+<div class="banner-strip" aria-label="Varma banner"></div>
+
+<div class="menu-strip">
+<div class="menu">
+<button onclick="show('dashboard')">Dashboard</button>
+<button onclick="show('products')">Products</button>
+<button onclick="show('sales')">Sales</button>
+<button onclick="show('stock')">Stock</button>
+<button onclick="show('report')">Reports</button>
+<button onclick="logoutUser()">Log Out</button>
+</div>
+</div>
+</header>
+
+<div id="statusMessage" class="status-message" aria-live="polite"></div>
+<div id="undoBar" class="undo-bar" aria-live="polite">
+<span id="undoText"></span>
+<div class="undo-actions">
+<button type="button" onclick="undoLastDeletedProduct()">Undo</button>
+<button type="button" class="undo-skip" onclick="dismissUndoDelete()">Skip</button>
+</div>
+</div>
+
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="section">
+<div class="hero-screen">
+</div>
+
+<h3>Dashboard</h3>
+
+<div class="cards">
+
+<div class="card">
+Total Products
+<div id="totalProducts">0</div>
+</div>
+
+<div class="card">
+Total Stock
+<div id="totalStock">0</div>
+</div>
+
+<div class="card">
+Low Stock
+<div id="lowStock">0</div>
+</div>
+
+<div class="card">
+Total Sales
+<div id="totalSales">0</div>
+</div>
+
+</div>
+
+<h3>Low Stock Items</h3>
+
+<table style="display:none;">
+
+<thead>
+<tr>
+<th>Product</th>
+<th>Qty</th>
+</tr>
+</thead>
+
+<tbody id="lowStockTable"></tbody>
+
+</table>
+
+</div>
+
+
+
+<!-- PRODUCTS -->
+
+<div id="products" class="section">
+
+<h2>Products</h2>
+
+<input id="prodName" placeholder="Product Name">
+<select id="prodSize">
+<option value="">Select Size</option>
+<option value="2gm">2gm</option>
+<option value="3gm">3gm</option>
+<option value="5gm Small">5gm Small</option>
+<option value="5gm Big">5gm Big</option>
+<option value="10gm">10gm</option>
+<option value="3D DEV">3D DEV</option>
+<option value="Sada Small">Sada Small</option>
+<option value="Sada Large">Sada Large</option>
+</select>
+<input id="prodQty" type="number" placeholder="Quantity">
+
+<button onclick="addProduct()">Add Product</button>
+
+<table>
+
+<thead>
+<tr>
+<th>Name</th>
+<th>Size</th>
+<th>Qty</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody id="productTable"></tbody>
+
+</table>
+
+</div>
+
+
+
+<!-- SALES -->
+
+<div id="sales" class="section">
+
+<h2>Sales Entry</h2>
+
+<input id="customer" placeholder="Customer Name" list="customerSuggestions">
+<datalist id="customerSuggestions"></datalist>
+
+<div class="multi-pick-box">
+<label>Select Products (Checkbox)</label>
+<div id="productCheckboxList" class="product-checkbox-list"></div>
+</div>
+
+<div class="multi-pick-box">
+<label for="quickCommonSize">Common Size For Selected Products</label>
+<select id="quickCommonSize" onchange="applyCommonSizeToRows()">
+<option value="">Select Common Size</option>
+<option value="2gm">2gm</option>
+<option value="3gm">3gm</option>
+<option value="5gm Small">5gm Small</option>
+<option value="5gm Big">5gm Big</option>
+<option value="10gm">10gm</option>
+<option value="3D DEV">3D DEV</option>
+<option value="Sada Small">Sada Small</option>
+<option value="Sada Large">Sada Large</option>
+</select>
+</div>
+
+<div class="multi-pick-box">
+<label for="quickCommonRate">Common Rate For Selected Products</label>
+<input id="quickCommonRate" type="number" min="0" placeholder="Enter Common Rate" onchange="applyCommonRateToRows()">
+</div>
+
+<div class="multi-pick-box">
+<label for="quickCommonQty">Common Quantity For Selected Products (Optional)</label>
+<input id="quickCommonQty" type="number" min="0" placeholder="Enter Common Qty" onchange="applyCommonQtyToRows()">
+</div>
+
+<div class="bill-actions">
+<button type="button" onclick="addItem()">Add Item</button>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Size</th>
+<th>Qty</th>
+<th>Rate</th>
+<th>Price</th>
+<th>Delete</th>
+</tr>
+</thead>
+<tbody id="quickRowsTable"></tbody>
+</table>
+
+<div class="sales-total-row">
+<strong>Grand Total:</strong>
+<span id="billGrandTotal">0</span>
+</div>
+
+<div class="bill-actions">
+<button type="button" onclick="generateBill()">Generate Bill</button>
+<button type="button" onclick="printCurrentBill()">Print Bill</button>
+<button type="button" onclick="saveBillAsImage()">Save as Image</button>
+</div>
+
+</div>
+
+
+
+<!-- STOCK -->
+
+<div id="stock" class="section">
+
+<h2>Stock</h2>
+
+<div class="multi-pick-box">
+<label>Select Products (Checkbox)</label>
+<div id="stockProductCheckboxList" class="product-checkbox-list"></div>
+</div>
+
+<div class="multi-pick-box">
+<label for="stockCommonSize">Common Size For Selected Products</label>
+<select id="stockCommonSize" onchange="applyStockCommonSizeToRows()">
+<option value="">Select Common Size</option>
+<option value="2gm">2gm</option>
+<option value="3gm">3gm</option>
+<option value="5gm Small">5gm Small</option>
+<option value="5gm Big">5gm Big</option>
+<option value="10gm">10gm</option>
+<option value="3D DEV">3D DEV</option>
+<option value="Sada Small">Sada Small</option>
+<option value="Sada Large">Sada Large</option>
+</select>
+</div>
+
+<div class="multi-pick-box">
+<label for="stockCommonQty">Common Quantity (Optional)</label>
+<input id="stockCommonQty" type="number" min="0" placeholder="Enter Common Qty" onchange="applyStockCommonQtyToRows()">
+</div>
+
+<div class="bill-actions">
+<button onclick="addStockBatch()">Add Stock (Batch)</button>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Size</th>
+<th>Qty</th>
+<th>Delete</th>
+</tr>
+</thead>
+<tbody id="stockQuickRowsTable"></tbody>
+</table>
+
+<input id="searchStock" placeholder="Search" oninput="loadStock()">
+
+<table>
+
+<thead>
+<tr>
+<th>Product</th>
+<th>Size</th>
+<th>Qty</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody id="stockTable"></tbody>
+
+</table>
+
+</div>
+
+
+
+<!-- REPORT -->
+
+<div id="report" class="section">
+
+<div class="report-shell">
+<h2>SALES / STOCK REPORT</h2>
+
+<div class="report-filter-box">
+<div class="report-type-list">
+<label><input type="radio" name="reportType" value="sales" checked onchange="runReport()"> Sales Date Wise</label>
+<label><input type="radio" name="reportType" value="customer" onchange="runReport()"> Customer Wise Sales</label>
+<label><input type="radio" name="reportType" value="daily" onchange="runReport()"> Daily Sales Summary</label>
+<label><input type="radio" name="reportType" value="lowStock" onchange="runReport()"> Low Stock</label>
+</div>
+
+<div class="report-controls">
+<label for="reportFromDate">From Date</label>
+<input id="reportFromDate" type="text" inputmode="numeric" placeholder="dd/mm/yyyy" oninput="formatDateInput(this)" onblur="normalizeDateInput(this)" onchange="runReport()">
+
+<label for="reportToDate">To Date</label>
+<input id="reportToDate" type="text" inputmode="numeric" placeholder="dd/mm/yyyy" oninput="formatDateInput(this)" onblur="normalizeDateInput(this)" onchange="runReport()">
+
+<label id="reportCustomerLabel" for="reportCustomer">Customer Name</label>
+<input id="reportCustomer" type="text" list="reportCustomerSuggestions" placeholder="Type customer name" oninput="debouncedRunReport()">
+<datalist id="reportCustomerSuggestions"></datalist>
+
+<div class="report-actions">
+<button type="button" onclick="runReport()">Show</button>
+<button type="button" onclick="printReport()">Print</button>
+</div>
+</div>
+</div>
+
+<div class="report-summary-line">
+<span>Bills: <strong id="reportTotalBills">0</strong></span>
+<span>Qty: <strong id="reportTotalQty">0</strong></span>
+<span>Amount: <strong id="reportTotalAmount">0</strong></span>
+<span>Low Stock: <strong id="reportLowStockCount">0</strong></span>
+</div>
+
+<div class="report-table-wrap">
+<table class="report-table">
+<thead id="reportTableHead"></thead>
+<tbody id="salesTable"></tbody>
+</table>
+</div>
+
+<div class="report-pagination">
+<button type="button" id="reportPrevBtn" onclick="prevReportPage()">Prev</button>
+<span id="reportPageInfo">Page 1 / 1</span>
+<button type="button" id="reportNextBtn" onclick="nextReportPage()">Next</button>
+</div>
+</div>
+
+</div>
+
+
+<script type="module" src="app.js?v=20260315t"></script>
+
+</div>
+</body>
+</html>
