@@ -1290,6 +1290,19 @@ totalSilverGm += qty * gramsPerPiece;
 return totalSilverGm;
 }
 
+function calculateSilverAvailableFromStock(productRows){
+let totalSilverGm = 0;
+(productRows || []).forEach(row => {
+const data = row.data || {};
+const gramsPerPiece = getSilverWeightBySize(data.size);
+if(gramsPerPiece <= 0) return;
+const qty = Number(data.qty) || 0;
+if(qty <= 0) return;
+totalSilverGm += qty * gramsPerPiece;
+});
+return totalSilverGm;
+}
+
 function setReportHead(columns){
 const head = getEl("reportTableHead");
 if(!head) return;
@@ -1450,6 +1463,10 @@ return;
 }
 
 const allProductsRows = await fetchCollectionRows("products");
+const silverAvailableFromStock = calculateSilverAvailableFromStock(allProductsRows);
+if(!(Number(getEl("reportAvailableSilverGm")?.value || 0) > 0)){
+setValue("reportAvailableSilverGm", silverAvailableFromStock.toFixed(2));
+}
 let lowStockCount = 0;
 allProductsRows.forEach(row => {
 const qty = Number(row.data?.qty) || 0;
@@ -1859,8 +1876,10 @@ const productRows = await fetchCollectionRows("products");
 const salesRows = await fetchCollectionRows("sales");
 let totalStock = 0;
 productRows.forEach(row => totalStock += Number(row.data?.qty) || 0);
+const totalSilverAvailable = calculateSilverAvailableFromStock(productRows);
 setText("totalProducts", productRows.length);
 setText("totalStock", totalStock);
+setText("totalSilverAvailable", totalSilverAvailable.toFixed(2));
 setText("totalSales", salesRows.length);
 }
 
