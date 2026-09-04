@@ -16,7 +16,7 @@
 <div id="loginPanel" class="auth-panel">
 <label for="loginUser">User</label><input id="loginUser" type="text" autocomplete="username">
 <label for="loginPass">Password</label><input id="loginPass" type="password" autocomplete="current-password">
-<button type="button" class="auth-submit" onclick="loginUser()">Login</button>
+<button type="button" class="auth-submit" onclick="localLogin()">Login</button>
 </div>
 <p id="authMessage" class="auth-message"></p>
 </div>
@@ -25,7 +25,7 @@
 </div>
 <div id="appShell" style="display:none;">
 <header class="topbar"><div class="banner-strip" aria-label="Varma banner"></div><div class="menu-strip"><div class="menu">
-<button onclick="show('dashboard')">Dashboard</button><button onclick="show('products')">Products</button><button onclick="show('sales')">Sales</button><button onclick="show('stock')">Stock</button><button onclick="show('report')">Reports</button><button onclick="logoutUser()">Log Out</button>
+<button onclick="show('dashboard')">Dashboard</button><button onclick="show('products')">Products</button><button onclick="show('sales')">Sales</button><button onclick="show('stock')">Stock</button><button onclick="show('report')">Reports</button><button onclick="syncNow()">Sync Now</button><button onclick="logoutUser()">Log Out</button>
 </div></div></header>
 <div id="statusMessage" class="status-message" aria-live="polite"></div>
 <div id="undoBar" class="undo-bar" aria-live="polite"><span id="undoText"></span><div class="undo-actions"><button type="button" onclick="undoLastDeletedProduct()">Undo</button><button type="button" class="undo-skip" onclick="dismissUndoDelete()">Skip</button></div></div>
@@ -38,5 +38,24 @@
 <div id="report" class="section"><div class="report-shell"><h2>SALES / STOCK REPORT</h2><div class="report-filter-box"><div class="report-type-list"><label><input type="radio" name="reportType" value="sales" checked onchange="runReport()"> Sales Date Wise</label><label><input type="radio" name="reportType" value="customer" onchange="runReport()"> Customer Wise Sales</label><label><input type="radio" name="reportType" value="daily" onchange="runReport()"> Daily Sales Summary</label><label><input type="radio" name="reportType" value="lowStock" onchange="runReport()"> Low Stock</label></div><div class="report-controls"><label for="reportFromDate">From Date</label><input id="reportFromDate" type="text" placeholder="dd/mm/yyyy" oninput="formatDateInput(this)" onchange="runReport()"><label for="reportToDate">To Date</label><input id="reportToDate" type="text" placeholder="dd/mm/yyyy" oninput="formatDateInput(this)" onchange="runReport()"><label id="reportCustomerLabel" for="reportCustomer">Customer Name</label><input id="reportCustomer" type="text" list="reportCustomerSuggestions" placeholder="Type customer name" oninput="debouncedRunReport()"><datalist id="reportCustomerSuggestions"></datalist><label for="reportAvailableSilverGm">Available Silver (gm)</label><input id="reportAvailableSilverGm" type="number" min="0" step="0.01"><div class="report-actions"><button type="button" onclick="runReport()">Show</button><button type="button" onclick="printReport()">Print</button></div></div></div><div class="report-summary-line"><span>Bills: <strong id="reportTotalBills">0</strong></span><span>Qty: <strong id="reportTotalQty">0</strong></span><span>Amount: <strong id="reportTotalAmount">0</strong></span><span>Low Stock: <strong id="reportLowStockCount">0</strong></span><span>Silver Used (gm): <strong id="reportSilverUsed">0</strong></span><span>Silver Balance/Need (gm): <strong id="reportSilverBalance">0</strong></span></div><div class="report-table-wrap"><table class="report-table"><thead id="reportTableHead"></thead><tbody id="salesTable"></tbody></table></div><div class="report-pagination"><button type="button" onclick="prevReportPage()">Prev</button><span id="reportPageInfo">Page 1 / 1</span><button type="button" onclick="nextReportPage()">Next</button></div></div></div>
 <script type="module" src="app.js?v=20260315t"></script>
 </div>
+<script>
+window.localLogin = function(){
+if(typeof window.loginUser === "function"){
+window.loginUser();
+return;
+}
+const username = (document.getElementById("loginUser")?.value || "").trim();
+const password = (document.getElementById("loginPass")?.value || "").trim();
+const message = document.getElementById("authMessage");
+if(username.toLowerCase() !== "v" || password.toLowerCase() !== "v"){
+if(message) message.textContent = "Invalid credentials.";
+return;
+}
+document.getElementById("authPage").style.display = "none";
+document.getElementById("appShell").style.display = "block";
+document.querySelectorAll(".section").forEach(section => section.style.display = "none");
+document.getElementById("dashboard").style.display = "block";
+};
+</script>
 </body>
 </html>

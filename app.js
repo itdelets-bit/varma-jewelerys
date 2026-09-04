@@ -416,6 +416,32 @@ void safeUiLoad(loadLowStock);
 }
 };
 
+window.syncNow = async function(){
+clearStatus();
+showStatus("Syncing with Firebase...");
+try{
+await firebaseSession;
+collectionReadCache.clear();
+await Promise.all([
+loadProducts(true),
+loadProductOptions(),
+loadStockBatchOptions(),
+loadStock(true),
+updateDashboard(),
+loadLowStock(),
+loadCustomerSuggestions()
+]);
+showStatus("Sync complete.");
+} catch(error){
+if(isPermissionDeniedError(error)){
+showStatus("Firebase access denied. Check Authentication and Firestore rules.", "error");
+return;
+}
+console.error(error);
+showStatus("Sync failed. Offline changes are kept locally.", "error");
+}
+};
+
 window.addProduct = async function(){
 try{
 const name = (getEl("prodName")?.value || "").trim();
