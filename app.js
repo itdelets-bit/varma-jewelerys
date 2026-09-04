@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/fireba
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 import {
 getFirestore,
+enableIndexedDbPersistence,
 collection,
 getDocs as fbGetDocs,
 getDoc as fbGetDoc,
@@ -25,6 +26,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const firebaseSession = signInAnonymously(auth);
+enableIndexedDbPersistence(db).catch(error => {
+if(error?.code !== "failed-precondition" && error?.code !== "unimplemented") console.error(error);
+});
 
 let billItems = [];
 let quickRows = [];
