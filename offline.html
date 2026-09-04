@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Varma Jewellers Offline</title>
+<link rel="stylesheet" href="offline.css">
+</head>
+<body>
+<header><h1>Varma Jewellers</h1><span id="connection">Offline mode</span><button id="syncButton" type="button">Sync now</button></header>
+<main>
+<section class="panel">
+<h2>Products and Stock</h2>
+<form id="productForm" class="form-row">
+<input id="productName" required placeholder="Product name">
+<input id="productSize" required placeholder="Size">
+<input id="productQty" required type="number" min="0" placeholder="Quantity">
+<button>Add / update</button>
+</form>
+<div class="table-wrap"><table><thead><tr><th>Name</th><th>Size</th><th>Quantity</th><th></th></tr></thead><tbody id="productRows"></tbody></table></div>
+</section>
+<section class="panel">
+<h2>Sales</h2>
+<form id="saleForm" class="form-row">
+<input id="customer" required placeholder="Customer name">
+<select id="saleProduct" required><option value="">Choose product</option></select>
+<input id="saleQty" required type="number" min="1" placeholder="Quantity">
+<input id="saleRate" required type="number" min="0" step="0.01" placeholder="Rate">
+<button>Save sale</button>
+</form>
+<div class="table-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Product</th><th>Qty</th><th>Total</th></tr></thead><tbody id="saleRows"></tbody></table></div>
+</section>
+<section class="panel summary"><h2>Summary</h2><strong id="summaryText">Loading...</strong><p id="status" role="status"></p></section>
+</main>
+<script src="offline.js"></script>
+</body>
+</html>

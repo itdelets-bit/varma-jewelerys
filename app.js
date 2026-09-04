@@ -1,4 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 import {
 getFirestore,
 collection,
@@ -21,7 +22,9 @@ projectId: "varma-jewelerys"
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
+const firebaseSession = signInAnonymously(auth);
 
 let billItems = [];
 let quickRows = [];
@@ -100,6 +103,11 @@ text.includes("too many requests") ||
 text.includes("429");
 }
 
+function isPermissionDeniedError(error){
+const text = `${error?.code || ""} ${error?.message || ""}`.toLowerCase();
+return text.includes("permission-denied") || text.includes("missing or insufficient permissions");
+}
+
 function notifyFirestoreError(error){
 console.error(error);
 if(!isQuotaExceededError(error)) return;
@@ -110,6 +118,7 @@ showStatus("Firebase quota exceeded. Sync paused. Quota reset hone ke baad data 
 async function getDocs(ref){
 if(firestoreQuotaBlocked) return EMPTY_QUERY_SNAPSHOT;
 try{
+await firebaseSession;
 return await fbGetDocs(ref);
 } catch(error){
 notifyFirestoreError(error);
@@ -121,6 +130,7 @@ throw error;
 async function getDoc(ref){
 if(firestoreQuotaBlocked) return EMPTY_DOC_SNAPSHOT;
 try{
+await firebaseSession;
 return await fbGetDoc(ref);
 } catch(error){
 notifyFirestoreError(error);
@@ -141,6 +151,7 @@ showStatus("Write blocked: Firebase quota exceeded.", "error");
 throwQuotaBlockedWriteError();
 }
 try{
+await firebaseSession;
 const created = await fbAddDoc(ref, data);
 invalidateCollectionCache(readCollectionNameFromCollectionRef(ref));
 return created;
@@ -156,6 +167,7 @@ showStatus("Write blocked: Firebase quota exceeded.", "error");
 throwQuotaBlockedWriteError();
 }
 try{
+await firebaseSession;
 const updated = await fbUpdateDoc(ref, data);
 invalidateCollectionCache(readCollectionNameFromDocRef(ref));
 return updated;
@@ -171,6 +183,7 @@ showStatus("Write blocked: Firebase quota exceeded.", "error");
 throwQuotaBlockedWriteError();
 }
 try{
+await firebaseSession;
 const removed = await fbDeleteDoc(ref);
 invalidateCollectionCache(readCollectionNameFromDocRef(ref));
 return removed;
@@ -235,6 +248,10 @@ await task();
 } catch(error){
 if(isQuotaExceededError(error)){
 showStatus("Firebase quota exceeded. Please wait for quota reset.", "error");
+return;
+}
+if(isPermissionDeniedError(error)){
+showStatus("Firestore access denied. Update Firebase rules for this app.", "error");
 return;
 }
 console.error(error);
@@ -1850,6 +1867,10 @@ showStatus("Default products added for all sizes. Qty set to 0.");
 }
 } catch(error){
 console.error(error);
+if(isPermissionDeniedError(error)){
+showStatus("Firestore access denied. Update Firebase rules for this app.", "error");
+return;
+}
 showStatus("Sync slow or blocked. Check internet/Firestore rules.", "error");
 }
 }
